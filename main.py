@@ -1,48 +1,65 @@
-from turtle import  Turtle,Screen
-import random
-from food import Food
+from turtle import Turtle, Screen
+from paddle import Paddle
 import time
-from snake import Snake
-from score import Scoreboard
-
-
+from ball import Ball
+from scoreboard import Scoreboard
 screen = Screen()
-food = Food()
-score=Scoreboard()
-
-screen.setup(width=600,height=600)
 screen.bgcolor("black")
-screen.title("My Snake Game")
+screen.setup(width=800,height=600)
 screen.tracer(0)
-snake = Snake()
-
 screen.listen()
-screen.onkey(snake.up, "Up")
-screen.onkey(snake.down, "Down")
-screen.onkey(snake.left, "Left")
-screen.onkey(snake.right, "Right")
+timmy = Turtle()
+timmy.color("White")
+timmy.speed(0)
+timmy.penup()
+timmy.goto(0,300)
+timmy.pensize(3)
+timmy.setheading(270)
 
-is_game_on=True
-while is_game_on:
+
+for _ in range(25):
+    timmy.pendown()
+    timmy.forward(12)
+    timmy.penup()
+    timmy.forward(12)
+
+rpaddle = Paddle((350,0))
+lpaddle = Paddle((-350,0))
+ball = Ball()
+scoreboard  = Scoreboard()
+# def go_u():
+#     new_y = zimmy.ycor() + 20
+#     zimmy.goto(zimmy.xcor(),new_y)
+#
+# def go_d():
+#     new_y = zimmy.ycor() - 20
+#     zimmy.goto(zimmy.xcor(), new_y)
+
+screen.onkey(rpaddle.go_up,"Up")
+screen.onkey(rpaddle.go_down,"Down")
+
+screen.onkey(lpaddle.go_up,"W")
+screen.onkey(lpaddle.go_down,"A")
+
+game_is_on = True
+while game_is_on:
+    time.sleep(ball.sp)
     screen.update()
-    time.sleep(0.1)
+    ball.move()
+    if ball.ycor() >280 or ball.ycor() < -280:
+        ball.ybounce()
 
-    snake.move()
+    if ball.distance(rpaddle)<50 and ball.xcor()>320 or ball.distance(lpaddle)<50 and ball.xcor()<-320 :
+        ball.xbounce()
 
-    if snake.segments[0].distance(food)<15:
-        food.refresh()
-        snake.extend()
-        score.increase_score()
-    if snake.segments[0].xcor()>290 or snake.segments[0].xcor()<-290 or snake.segments[0].ycor()>290 or \
-            snake.segments[0].ycor()<-290:
-        is_game_on=False
-        score.game_over()
-    for turtle in snake.segments:
-        if turtle== snake.head:
-            pass
-        elif snake.head.distance(turtle)<10:
-            is_game_on=False
-            score.game_over()
+
+    if ball.xcor()>370 :
+        ball.reset()
+        scoreboard.lpoint()
+
+    if ball.xcor()<-370:
+        ball.reset()
+        scoreboard.rpoint()
 
 
 screen.exitonclick()
